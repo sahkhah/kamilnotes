@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "443381132176",
+    "project_id": "kamilnotes",
+    "storage_bucket": "kamilnotes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:443381132176:android:203e6e89cfd57ad5d3e115",
+        "android_client_info": {
+          "package_name": "com.example.kamilnotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "443381132176-78025kluh9e2vr6cj34o6vkq6csnhbl6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8-jYQWAuV5EprVw8lHhp0qe2O4LAI_3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "443381132176-78025kluh9e2vr6cj34o6vkq6csnhbl6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
