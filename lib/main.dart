@@ -1,13 +1,16 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+/* import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart'; */
 import 'package:flutter/material.dart';
 import 'package:kamilnotes/views/login_view.dart';
+import 'package:kamilnotes/views/note_view.dart';
 import 'package:kamilnotes/views/register_view.dart';
-import 'package:kamilnotes/views/verify_email_view.dart';
+/* import 'package:kamilnotes/views/verify_email_view.dart';
 import 'firebase_options.dart';
+ */
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const Homepage());
 }
 
@@ -36,14 +39,13 @@ class Homepage extends StatelessWidget {
                 final user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
                   if (user.emailVerified) {
-                    print('Email is verified');
+                    return const NoteView();
                   } else {
                     return const EmailVerificationView();
                   }
                 } else {
                   return const LoginView();
                 }
-                return const Text('DONE');
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -57,5 +59,6 @@ class Homepage extends StatelessWidget {
 //git log
 //git tag "Step-1"
 //git push --tag
+//git tag
 
 
