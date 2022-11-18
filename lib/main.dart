@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-//import 'package:kamilnotes/views/register_view.dart';
-//import 'package:kamilnotes/views/login_view.dart';
-
+import 'package:kamilnotes/views/login_view.dart';
+import 'package:kamilnotes/views/register_view.dart';
+import 'package:kamilnotes/views/verify_email_view.dart';
 import 'firebase_options.dart';
 
 void main() {
@@ -22,36 +22,40 @@ class Homepage extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: Scaffold(
-            appBar: AppBar(
-              title: const Text('Homepage'),
+        routes: {
+          '/login/': (context) => const LoginView(),
+          '/register/': (context) => const RegisterView(),
+        },
+        home: FutureBuilder(
+            future: Firebase.initializeApp(
+              options: DefaultFirebaseOptions.currentPlatform,
             ),
-            //initialize firebase before using it
-            body: FutureBuilder(
-                future: Firebase.initializeApp(
-                  options: DefaultFirebaseOptions.currentPlatform,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    //get the current user
-                    final user = FirebaseAuth.instance.currentUser;
-                    print(user);
-                    //check if the user email is verified
-                    final emailVerified = user?.emailVerified ?? false;
-                    if (emailVerified) {
-                      print('Email is verified');
-                    } else {
-                      print('${user?.email} email is not verified');
-                    }
-                    /* if (user != null) {
-                      if (user.emailVerified) {
-                        print('Email is verified');
-                      }
-                    } */
-                    return const Center(child: Text('DONE'));
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                //get the current user
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  if (user.emailVerified) {
+                    print('Email is verified');
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return const EmailVerificationView();
                   }
-                })));
+                } else {
+                  return const LoginView();
+                }
+                return const Text('DONE');
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            }));
   }
 }
+//git add -all
+//git commit -m "initial commit"
+//to push our code to git hub :1. add origin: git remote add origin + (copy the ssh from the github website)
+//to push our code use git push -u origin HEAD -f (f means force push)
+//git log
+//git tag "Step-1"
+//git push --tag
+
+
