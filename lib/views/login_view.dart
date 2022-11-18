@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({
@@ -72,21 +73,23 @@ class _LoginViewState extends State<LoginView> {
                         final userCredential = await FirebaseAuth.instance
                             .signInWithEmailAndPassword(
                                 email: email, password: password);
-                        print('The user Credential is $userCredential');
+                        devtools.log('The user Credential is $userCredential');
                         //a call back for when the user is signed in
                         FirebaseAuth.instance
                             .authStateChanges()
                             .listen((User? user) {
                           if (user == null) {
-                            print('User is currently signed out');
+                            devtools.log('User is currently signed out');
                           } else {
-                            print('User is signed in');
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                '/newNote/', (route) => false);
+                            devtools.log('User is signed in');
                           }
                         });
                       } on FirebaseAuthException catch (error) {
                         /* print(error);
                             print(error.runtimeType); */
-                        print(error.message);
+                        devtools.log(error.message.toString());
                       }
                     },
                     child: const Text('Login'),
