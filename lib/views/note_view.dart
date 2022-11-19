@@ -28,7 +28,6 @@ class _NoteViewState extends State<NoteView> {
                   final shouldLogout = await _showLogoutDialog(context);
                   if (shouldLogout) {
                     FirebaseAuth.instance.signOut();
-                    const CircularProgressIndicator();
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
