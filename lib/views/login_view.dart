@@ -83,9 +83,14 @@ class _LoginViewState extends State<LoginView> {
                           if (user == null) {
                             devtools.log('User is currently signed out');
                           } else {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                noteRoute, (route) => false);
-                            devtools.log('User is signed in');
+                            if (user.emailVerified) {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  noteRoute, (route) => false);
+                              devtools.log('User is signed in');
+                            } else {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  verifyEmailRoute, (route) => false);
+                            }
                           }
                         });
                       } on FirebaseAuthException catch (error) {
@@ -105,7 +110,8 @@ class _LoginViewState extends State<LoginView> {
                         devtools.log(error.message.toString());
                         //catch an error that's not firebase auth
                       } catch (error) {
-                        await showErrorDialog(context, 'Error: ${error.toString()}');
+                        await showErrorDialog(
+                            context, 'Error: ${error.toString()}');
                       }
                     },
                     child: const Text('Login'),

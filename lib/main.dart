@@ -1,4 +1,5 @@
 //import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart'; 
 import 'package:flutter/material.dart';
 import 'package:kamilnotes/constants/routes.dart';
@@ -40,7 +41,7 @@ class Homepage extends StatelessWidget {
             ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                /* //get the current user
+                ///get the current user
                 final user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
                   if (user.emailVerified) {
@@ -48,9 +49,9 @@ class Homepage extends StatelessWidget {
                   } else {
                     return const EmailVerificationView();
                   }
-                } else { */
+                } else { 
                   return const LoginView();
-                //}
+                }
               } else {
                 return const Center(child: CircularProgressIndicator());
               }

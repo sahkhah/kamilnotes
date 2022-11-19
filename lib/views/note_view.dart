@@ -20,9 +20,7 @@ class _NoteViewState extends State<NoteView> {
       appBar: AppBar(
         title: const Text('MAIN UI'),
         actions: [
-          IconButton(
-            onPressed: (){}, 
-            icon: const Icon(Icons.search)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -30,6 +28,7 @@ class _NoteViewState extends State<NoteView> {
                   final shouldLogout = await _showLogoutDialog(context);
                   if (shouldLogout) {
                     FirebaseAuth.instance.signOut();
+                    const CircularProgressIndicator();
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }

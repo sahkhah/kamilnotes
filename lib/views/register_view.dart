@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:kamilnotes/constants/routes.dart';
 
+import '../utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({
@@ -66,9 +68,32 @@ class _RegisterViewState extends State<RegisterView> {
                   final userCredential = await FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
                           email: email, password: password);
+                          devtools.log('The user Credential is $userCredential');
+                  final user = FirebaseAuth.instance.currentUser;
+                  await user?.sendEmailVerification();
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
+                  /* FirebaseAuth.instance.authStateChanges().listen((User? user) {
+                    if (user == null) {
+                      devtools.log('User is currently signed out');
+                    } else {
+                      //this makes the verify email rout lay ontop of the register route, incase the user press the back button
+                     Navigator.of(context).pushNamed(
+                      verifyEmailRoute);
                   devtools.log('The user Credential is $userCredential');
+                    }
+                  }); */
                 } on FirebaseAuthException catch (error) {
-                  devtools.log(error.message.toString());
+                  if (error.code == 'weak-password') {
+                    await showErrorDialog(context, 'wweak password');
+                  } else if (error.code == 'email-already-in-use') {
+                    await showErrorDialog(context, 'email already in use');
+                  } else if (error.code == 'invalid-email') {
+                    await showErrorDialog(context, 'invalid email entered');
+                  } else {
+                    await showErrorDialog(context, 'Error: ${error.code}');
+                  }
+                } catch (error) {
+                  await showErrorDialog(context, 'Error: ${error.toString()}');
                 }
               },
               child: const Text('Register')),
