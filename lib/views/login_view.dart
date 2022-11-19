@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kamilnotes/constants/routes.dart';
+import 'package:kamilnotes/services/auth/auth_exceptions.dart';
+import 'package:kamilnotes/services/auth/auth_services.dart';
 import 'package:kamilnotes/utilities/show_error_dialog.dart';
-import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
@@ -41,9 +40,7 @@ class _LoginViewState extends State<LoginView> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
+          future: AuthService.firebase().initialize(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return Column(
@@ -67,23 +64,16 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   const SizedBox(),
                   TextButton(
-                    onPressed: () async {
+                    onPressed: () async{
                       final email = _email.text;
                       final password = _password.text;
-                      try {
+                      try{
                         //allows you to create a user with email and password in firebase
-                        final userCredential = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: email, password: password);
-                        devtools.log('The user Credential is $userCredential');
+                        await AuthService.firebase()
+                            .login(email: email, password: password);
                         //a call back for when the user is signed in
-                        FirebaseAuth.instance
-                            .authStateChanges()
-                            .listen((User? user) {
-                          if (user == null) {
-                            devtools.log('User is currently signed out');
-                          } else {
-                            if (user.emailVerified) {
+                        final user = AuthService.firebase().currentUser;
+                            if (user?.isEmailVerified??false) {
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   noteRoute, (route) => false);
                               devtools.log('User is signed in');
@@ -91,26 +81,16 @@ class _LoginViewState extends State<LoginView> {
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   verifyEmailRoute, (route) => false);
                             }
-                          }
-                        });
-                      } on FirebaseAuthException catch (error) {
-                        switch (error.code) {
-                          case 'user-not-found':
-                            await showErrorDialog(context, 'user not found');
-                            break;
-                          case 'wrong-password':
-                            await showErrorDialog(context,
+                          }on UserNotFoundAuthException{
+                              await showErrorDialog(context, 'user not found');
+                          } on WeakPasswordAuthException{
+                              await showErrorDialog(context,
                                 'password is incorrect, please try again');
-                            break;
-                          default:
+                          }on GenericAuthException{
+                              await showErrorDialog(
+                            context, 'Error: Authentication Error');
+                          } catch (error) {
                             await showErrorDialog(
-                                context, 'Error: ${error.code}');
-                        }
-
-                        devtools.log(error.message.toString());
-                        //catch an error that's not firebase auth
-                      } catch (error) {
-                        await showErrorDialog(
                             context, 'Error: ${error.toString()}');
                       }
                     },

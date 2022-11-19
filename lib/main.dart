@@ -1,14 +1,11 @@
-//import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart'; 
 import 'package:flutter/material.dart';
 import 'package:kamilnotes/constants/routes.dart';
+import 'package:kamilnotes/services/auth/auth_services.dart';
 import 'package:kamilnotes/views/login_view.dart';
 import 'package:kamilnotes/views/note_view.dart';
 import 'package:kamilnotes/views/register_view.dart';
 import 'package:kamilnotes/views/verify_email_view.dart';
-//import 'package:kamilnotes/views/verify_email_view.dart';
-import 'firebase_options.dart';
+
  
 
 void main() {
@@ -36,15 +33,13 @@ class Homepage extends StatelessWidget {
 
         },
         home: FutureBuilder(
-            future: Firebase.initializeApp(
-              options: DefaultFirebaseOptions.currentPlatform,
-            ),
+            future: AuthService.firebase().initialize(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 ///get the current user
-                final user = FirebaseAuth.instance.currentUser;
+                final user = AuthService.firebase().currentUser;
                 if (user != null) {
-                  if (user.emailVerified) {
+                  if (user.isEmailVerified) {
                     return const NoteView();
                   } else {
                     return const EmailVerificationView();

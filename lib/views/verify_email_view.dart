@@ -1,8 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:kamilnotes/constants/routes.dart';
+import 'package:kamilnotes/services/auth/auth_exceptions.dart';
+import 'package:kamilnotes/services/auth/auth_services.dart';
+import 'package:kamilnotes/utilities/show_error_dialog.dart';
 
 class EmailVerificationView extends StatefulWidget {
   const EmailVerificationView({super.key});
@@ -27,19 +30,19 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
                 onPressed: () async {
                   try {
                     //get the current signed in user
-                    final user = FirebaseAuth.instance.currentUser;
+                    final user = AuthService.firebase().currentUser;
                     devtools.log(user.toString());
                     //send email verification to the user
-                    await user?.sendEmailVerification();
-                  } on FirebaseAuthException catch (error) {
-                    devtools.log(error.code);
-                    devtools.log(error.message.toString());
+                    await AuthService.firebase().sendEmailVerification();
+                  } on GenericAuthException{
+                    await showErrorDialog(context, 'Failed to verify Email');
                   }
+                  
                 },
                 child: const Text('Verify Email')),
             TextButton(
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
+                await AuthService.firebase().signOut();
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },

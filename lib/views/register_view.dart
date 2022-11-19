@@ -1,11 +1,8 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/rendering.dart';
 import 'dart:developer' as devtools show log;
-
 import 'package:kamilnotes/constants/routes.dart';
-
+import 'package:kamilnotes/services/auth/auth_exceptions.dart';
+import 'package:kamilnotes/services/auth/auth_services.dart';
 import '../utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -65,34 +62,20 @@ class _RegisterViewState extends State<RegisterView> {
                 final password = _password.text;
                 try {
                   //allows you to create a user with email and password in firebase
-                  final userCredential = await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                          email: email, password: password);
-                          devtools.log('The user Credential is $userCredential');
-                  final user = FirebaseAuth.instance.currentUser;
-                  await user?.sendEmailVerification();
-                  Navigator.of(context).pushNamed(verifyEmailRoute);
-                  /* FirebaseAuth.instance.authStateChanges().listen((User? user) {
-                    if (user == null) {
-                      devtools.log('User is currently signed out');
-                    } else {
-                      //this makes the verify email rout lay ontop of the register route, incase the user press the back button
-                     Navigator.of(context).pushNamed(
-                      verifyEmailRoute);
+                  final userCredential = await AuthService.firebase()
+                      .createUser(email: email, password: password);
                   devtools.log('The user Credential is $userCredential');
-                    }
-                  }); */
-                } on FirebaseAuthException catch (error) {
-                  if (error.code == 'weak-password') {
+                  final user = AuthService.firebase().currentUser;
+                  await AuthService.firebase().sendEmailVerification();
+                } on WeakPasswordAuthException{
                     await showErrorDialog(context, 'wweak password');
-                  } else if (error.code == 'email-already-in-use') {
+                }on EmailAlreadyInUseAuthException{
                     await showErrorDialog(context, 'email already in use');
-                  } else if (error.code == 'invalid-email') {
+                }on InvalidEmailAuthException{
                     await showErrorDialog(context, 'invalid email entered');
-                  } else {
-                    await showErrorDialog(context, 'Error: ${error.code}');
-                  }
-                } catch (error) {
+                }on GenericAuthException{
+                    await showErrorDialog(context, 'Error: Authentication Error');
+                }catch (error) {
                   await showErrorDialog(context, 'Error: ${error.toString()}');
                 }
               },
