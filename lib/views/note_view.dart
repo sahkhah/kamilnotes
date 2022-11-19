@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
+import 'package:kamilnotes/constants/routes.dart';
+
 enum MenuAction { logout }
 
 class NoteView extends StatefulWidget {
@@ -29,7 +31,7 @@ class _NoteViewState extends State<NoteView> {
                   if (shouldLogout) {
                     FirebaseAuth.instance.signOut();
                     Navigator.of(context)
-                        .pushNamedAndRemoveUntil('/login/', (_) => false);
+                        .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
                   //we have to say value.toString() bcos the log function only takes strings as argument
                   devtools.log(shouldLogout.toString());

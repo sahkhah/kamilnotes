@@ -1,9 +1,11 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart'; 
 import 'package:flutter/material.dart';
+import 'package:kamilnotes/constants/routes.dart';
 import 'package:kamilnotes/views/login_view.dart';
 import 'package:kamilnotes/views/note_view.dart';
 import 'package:kamilnotes/views/register_view.dart';
+import 'package:kamilnotes/views/verify_email_view.dart';
 //import 'package:kamilnotes/views/verify_email_view.dart';
 import 'firebase_options.dart';
  
@@ -26,9 +28,11 @@ class Homepage extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         routes: {
-          '/login/': (context) => const LoginView(),
-          '/register/': (context) => const RegisterView(),
-          '/newNote/': (context) => const NoteView(),
+          loginRoute: (context) => const LoginView(),
+          registerRoute: (context) => const RegisterView(),
+          noteRoute: (context) => const NoteView(),
+          verifyEmailRoute: (context) => const EmailVerificationView(),
+
         },
         home: FutureBuilder(
             future: Firebase.initializeApp(

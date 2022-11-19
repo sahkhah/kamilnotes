@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kamilnotes/constants/routes.dart';
+import 'package:kamilnotes/utilities/show_error_dialog.dart';
 import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
@@ -82,14 +84,28 @@ class _LoginViewState extends State<LoginView> {
                             devtools.log('User is currently signed out');
                           } else {
                             Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/newNote/', (route) => false);
+                                noteRoute, (route) => false);
                             devtools.log('User is signed in');
                           }
                         });
                       } on FirebaseAuthException catch (error) {
-                        /* print(error);
-                            print(error.runtimeType); */
+                        switch (error.code) {
+                          case 'user-not-found':
+                            await showErrorDialog(context, 'user not found');
+                            break;
+                          case 'wrong-password':
+                            await showErrorDialog(context,
+                                'password is incorrect, please try again');
+                            break;
+                          default:
+                            await showErrorDialog(
+                                context, 'Error: ${error.code}');
+                        }
+
                         devtools.log(error.message.toString());
+                        //catch an error that's not firebase auth
+                      } catch (error) {
+                        await showErrorDialog(context, 'Error: ${error.toString()}');
                       }
                     },
                     child: const Text('Login'),
@@ -97,7 +113,7 @@ class _LoginViewState extends State<LoginView> {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/register/', (route) => false);
+                            registerRoute, (route) => false);
                       },
                       child: const Text('Not Registered yet? Register Here!'))
                 ],
