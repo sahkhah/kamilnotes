@@ -45,6 +45,7 @@ class FirebaseAuthProvider implements AuthProvider {
     }
   }
 
+
   @override
   Future<AuthUser> login(
       {required String email, required String password}) async {

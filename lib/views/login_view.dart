@@ -68,7 +68,7 @@ class _LoginViewState extends State<LoginView> {
                       final email = _email.text;
                       final password = _password.text;
                       try{
-                        //allows you to create a user with email and password in firebase
+                        //allows you to lgin a user with email and password in firebase
                         await AuthService.firebase()
                             .login(email: email, password: password);
                         //a call back for when the user is signed in

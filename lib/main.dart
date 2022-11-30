@@ -53,13 +53,5 @@ class Homepage extends StatelessWidget {
             }));
   }
 }
-//git add -all
-//git commit -m "initial commit"
-//to push our code to git hub :1. add origin: git remote add origin + (copy the ssh from the github website)
-//to push our code use git push -u origin HEAD -f (f means force push)
-//git log
-//git tag "Step-1"
-//git push --tag
-//git tag
 
 

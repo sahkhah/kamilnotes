@@ -53,6 +53,8 @@ class _RegisterViewState extends State<RegisterView> {
             enableSuggestions: false,
             autocorrect: false,
             decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'password',
                 hintText: 'password', prefixIcon: Icon(Icons.password)),
           ),
           const SizedBox(),
