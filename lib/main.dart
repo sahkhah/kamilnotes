@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kamilnotes/constants/routes.dart';
 import 'package:kamilnotes/services/auth/auth_services.dart';
 import 'package:kamilnotes/views/login_view.dart';
-import 'package:kamilnotes/views/note_view.dart';
+import 'package:kamilnotes/views/notes/new_note_view.dart';
+import 'package:kamilnotes/views/notes/note_view.dart';
 import 'package:kamilnotes/views/register_view.dart';
 import 'package:kamilnotes/views/verify_email_view.dart';
 
@@ -30,6 +31,7 @@ class Homepage extends StatelessWidget {
           registerRoute: (context) => const RegisterView(),
           noteRoute: (context) => const NoteView(),
           verifyEmailRoute: (context) => const EmailVerificationView(),
+          newNoteRoute: (context) => const NewNoteView(),
 
         },
         home: FutureBuilder(

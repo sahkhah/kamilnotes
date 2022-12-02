@@ -1,5 +1,6 @@
 //Login Exception
 class UserNotFoundAuthException implements Exception{}
+class UserNotFoundException implements Exception{}
 class WrongPasswordAuthException implements Exception{}
 
 //Register Exception
