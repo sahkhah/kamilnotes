@@ -4,6 +4,7 @@ import 'package:kamilnotes/services/cloud/cloud_note.dart';
 import 'package:kamilnotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:kamilnotes/utilities/dialog/cannot_share_empty_note_dialog.dart';
 import 'package:kamilnotes/utilities/generics/get_argument.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {
   const CreateUpdateNoteView({super.key});
@@ -95,7 +96,8 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                   if (_note == null || text.isEmpty) {
                     await showCannotShareEmptyNoteDialog(context);
                   } else {
-                    Share.share(text);      //get the plugin share_plus
+                    //Share.share(text);      //get the plugin share_plus
+                    Share.share(text);
                   }
                 },
                 icon: const Icon(Icons.share))
