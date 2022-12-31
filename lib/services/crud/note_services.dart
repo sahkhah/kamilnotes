@@ -1,6 +1,6 @@
-import 'dart:async';
-import 'dart:async';
+/* import 'dart:async';
 
+import 'package:kamilnotes/extensions/lib/filter.dart';
 import 'package:kamilnotes/services/crud/crud_exceptions.dart';
 import 'package:kamilnotes/services/auth/auth_exceptions.dart';
 import 'package:path/path.dart';
@@ -59,29 +59,52 @@ class DatabaseNote {
 
 class NoteService {
   Database? _db;
+  DatabaseUser? _user;
 
   //Making NoteService a singleton
   static final NoteService _shared = NoteService._sharedInstance();
-  NoteService._sharedInstance();
+  NoteService._sharedInstance() {
+    _noteStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _noteStreamController.sink.add(_notes);
+      },
+    );
+  }
 
   factory NoteService() => _shared;
 
   List<DatabaseNote> _notes = [];
   //keeps the lists aware of any operation on the notes in the list , i.e update, delete and creation
-  final _noteStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _noteStreamController;
 
   //get the stream of notes
-  Stream<List<DatabaseNote>> get allNote => _noteStreamController.stream;
+  Stream<List<DatabaseNote>> get allNote =>
+      _noteStreamController.stream.filter((note) {
+        final currentUser = _user;
+        if (currentUser != null) {
+          return note.userId == currentUser.id;
+        } else {
+          throw UserShouldBeSetBeforeReadingAllNotes();
+        }
+      });
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
     await _ensureDBIsOpen();
     try {
       final existingUser = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = existingUser;
+      }
       return existingUser;
     } on UserAlreadyExistException {
       //this is some mad stuff
       final newUser = await createUser(email: email);
+      if (setAsCurrentUser) {
+        _user = newUser;
+      }
       return newUser;
     } catch (e) {
       rethrow; //useful for debugging...
@@ -111,8 +134,9 @@ class NoteService {
     final db = _getDatabaseOrThrow();
     //check if the note exists
     await getNote(id: note.id);
-    final updateCount = await db
-        .update(noteTable, {textColumn: text, isSyncedWithCloudColumn: 0});
+    final updateCount = await db.update(
+        noteTable, {textColumn: text, isSyncedWithCloudColumn: 0},
+        where: 'id = ?', whereArgs: [note.id]);
     if (updateCount == 0) throw CouldNotUpdateNoteException;
     final updatedNote = await getNote(id: note.id);
     _notes.removeWhere((element) => element.id == note.id);
@@ -290,3 +314,4 @@ const createNoteTable = '''CREATE TABLE IF NOT EXISTS "note"(
     "FOREIGN KEY("user_id") REFERENCES "user"("id"),
     PRIMARY KEY ("id" AUTOINCREMENT)
   );''';
+ */

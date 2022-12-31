@@ -5,7 +5,9 @@ import 'dart:developer' as devtools show log;
 import 'package:kamilnotes/constants/routes.dart';
 import 'package:kamilnotes/services/auth/auth_exceptions.dart';
 import 'package:kamilnotes/services/auth/auth_services.dart';
-import 'package:kamilnotes/utilities/show_error_dialog.dart';
+
+import '../utilities/dialog/error_dialog.dart';
+
 
 class EmailVerificationView extends StatefulWidget {
   const EmailVerificationView({super.key});

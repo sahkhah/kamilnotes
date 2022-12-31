@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 import 'package:kamilnotes/constants/routes.dart';
 import 'package:kamilnotes/services/auth/auth_services.dart';
-import 'package:kamilnotes/services/crud/note_services.dart';
+import 'package:kamilnotes/services/cloud/cloud_note.dart';
+import 'package:kamilnotes/services/cloud/firebase_cloud_storage.dart';
+import 'package:kamilnotes/views/notes/note_listview.dart';
 import '../../enums/menu_action.dart';
+import '../../utilities/dialog/show_logout_dialog.dart';
 
 class NoteView extends StatefulWidget {
   const NoteView({super.key});
@@ -14,20 +17,21 @@ class NoteView extends StatefulWidget {
 
 class _NoteViewState extends State<NoteView> {
   //expose the current user's email
-  String get userEmail => AuthService.firebase().currentUser!.email!; //note
-  late final NoteService _noteService;
+  String get userId => AuthService.firebase().currentUser!.id; //note
+  late final FirebaseCloudStorage _noteService;
 
   @override
   void initState() {
-    _noteService = NoteService();
+    _noteService = FirebaseCloudStorage();
     super.initState();
   }
 
-  @override
+//any time we perform hot reload, the database closes, this is a bad practice,
+/*   @override
   void dispose() {
     _noteService.closeDB();
     super.dispose();
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +41,15 @@ class _NoteViewState extends State<NoteView> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(newNoteRoute);
+                  Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
                 },
                 icon: const Icon(Icons.add)),
             PopupMenuButton<MenuAction>(
               onSelected: (value) async {
                 switch (value) {
                   case MenuAction.logout:
-                    final shouldLogout = await _showLogoutDialog(context);
+                    final shouldLogout =
+                        await showLogoutDialog(context, 'Logout');
                     if (shouldLogout) {
                       AuthService.firebase().signOut();
                       Navigator.of(context)
@@ -66,51 +71,33 @@ class _NoteViewState extends State<NoteView> {
             ),
           ],
         ),
-        body: FutureBuilder(
-          future: _noteService.getOrCreateUser(email: userEmail),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return StreamBuilder(
-                  stream: _noteService.allNote,
+        body: StreamBuilder(
+                  stream: _noteService.allNotes(ownerUserId: userId),
                   builder: (context, snapshot) {
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return const Text('Waiting fo notes to appear');
+                      case ConnectionState
+                          .active: //this means that atleast one data is available
+                        if (snapshot.hasData) {
+                          final allNote = snapshot.data as Iterable<CloudNote>;
+                          return NoteListView(
+                            notes: allNote,
+                            onDeleteNote: (note) async {
+                              await _noteService.deleteNote( documentId: note.documentId);
+                            },
+                            onUpdateNote: (note) {
+                              Navigator.of(context).pushNamed(
+                                  createOrUpdateNoteRoute,
+                                  arguments: note);
+                            },
+                          );
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
                       default:
                         return const CircularProgressIndicator();
                     }
                   },
-                );
-              default:
-                return const CircularProgressIndicator();
-            }
-          },
-        ));
+                ));
   }
-}
-
-Future<bool> _showLogoutDialog(BuildContext context) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Logut'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('Cancel')),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('Logout')),
-        ],
-      );
-    },
-    //if the user clicks outside the alert dialog instead of yes/no button we need to create a call back
-  ).then((value) => value ?? false);
 }

@@ -1,4 +1,4 @@
-class DatabaseAlreadyOpenedException implements Exception{}
+/* class DatabaseAlreadyOpenedException implements Exception{}
 
 class UnableToGetDocumentDirectoryException implements Exception{}
 
@@ -13,3 +13,5 @@ class NoteCouldNotBeDeletedException implements Exception{}
 class NoteDoNotExistException implements Exception{}
 
 class CouldNotUpdateNoteException implements Exception{}
+
+class UserShouldBeSetBeforeReadingAllNotes implements Exception{} */
