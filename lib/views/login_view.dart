@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kamilnotes/constants/routes.dart';
 import 'package:kamilnotes/services/auth/auth_exceptions.dart';
 import 'package:kamilnotes/services/auth/auth_services.dart';
+import 'package:kamilnotes/services/auth/bloc/auth_bloc.dart';
+import 'package:kamilnotes/services/auth/bloc/auth_event.dart';
+import 'package:kamilnotes/services/auth/bloc/auth_state.dart';
 import 'dart:developer' as devtools show log;
 
 import '../utilities/dialog/error_dialog.dart';
@@ -64,11 +68,20 @@ class _LoginViewState extends State<LoginView> {
                         hintText: 'password', prefixIcon: Icon(Icons.password)),
                   ),
                   const SizedBox(),
-                  TextButton(
-                    onPressed: () async{
-                      final email = _email.text;
-                      final password = _password.text;
-                      try{
+                  BlocListener<AuthBloc, AuthState>(
+                    listener: (context, state) async {
+                      
+                    },
+                    child: TextButton(
+                      onPressed: () async {
+                        final email = _email.text;
+                        final password = _password.text;
+                          context
+                              .read<AuthBloc>()
+                              .add(AuthEventLogIn(email, password));
+                       /*  try {
+                        }
+                        /*  try{
                         //allows you to lgin a user with email and password in firebase
                         await AuthService.firebase()
                             .login(email: email, password: password);
@@ -81,21 +94,22 @@ class _LoginViewState extends State<LoginView> {
                             } else {
                               Navigator.of(context).pushNamedAndRemoveUntil(
                                   verifyEmailRoute, (route) => false);
-                            }
-                          }on UserNotFoundAuthException{
-                              await showErrorDialog(context, 'user not found');
-                          } on WeakPasswordAuthException{
-                              await showErrorDialog(context,
-                                'password is incorrect, please try again');
-                          }on GenericAuthException{
-                              await showErrorDialog(
-                            context, 'Error: Authentication Error');
-                          } catch (error) {
-                            await showErrorDialog(
-                            context, 'Error: ${error.toString()}');
-                      }
-                    },
-                    child: const Text('Login'),
+                            }*/
+                        on UserNotFoundAuthException {
+                          await showErrorDialog(context, 'user not found');
+                        } on WeakPasswordAuthException {
+                          await showErrorDialog(context,
+                              'password is incorrect, please try again');
+                        } on GenericAuthException {
+                          await showErrorDialog(
+                              context, 'Error: Authentication Error');
+                        } catch (error) {
+                          await showErrorDialog(
+                              context, 'Error: ${error.toString()}');
+                        }*/
+                      }, 
+                      child: const Text('Login'),
+                    ),
                   ),
                   TextButton(
                       onPressed: () {

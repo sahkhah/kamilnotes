@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer' as devtools show log;
 import 'package:kamilnotes/constants/routes.dart';
 import 'package:kamilnotes/services/auth/auth_services.dart';
+import 'package:kamilnotes/services/auth/bloc/auth_event.dart';
 import 'package:kamilnotes/services/cloud/cloud_note.dart';
 import 'package:kamilnotes/services/cloud/firebase_cloud_storage.dart';
 import 'package:kamilnotes/views/notes/note_listview.dart';
 import '../../enums/menu_action.dart';
+import '../../services/auth/bloc/auth_bloc.dart';
 import '../../utilities/dialog/show_logout_dialog.dart';
 
 class NoteView extends StatefulWidget {
@@ -51,9 +54,12 @@ class _NoteViewState extends State<NoteView> {
                     final shouldLogout =
                         await showLogoutDialog(context, 'Logout');
                     if (shouldLogout) {
-                      AuthService.firebase().signOut();
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil(loginRoute, (_) => false);
+                      context.read<AuthBloc>().add(
+                        const AuthEventLogOut()
+                      );
+                     // AuthService.firebase().signOut();
+                    /*   Navigator.of(context)
+                          .pushNamedAndRemoveUntil(loginRoute, (_) => false); */
                     }
                     //we have to say value.toString() bcos the log function only takes strings as argument
                     devtools.log(shouldLogout.toString());
